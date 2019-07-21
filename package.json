@@ -5,7 +5,7 @@
   "main": "index.mjs",
   "type": "module",
   "scripts": {
-    "test": "cross-env NODE_ENV=test mjs-mocha --recursive",
+    "test": "cross-env NODE_ENV=test mocha --recursive -r esm --exit",
     "start": "cross-env NODE_ENV=development node --experimental-modules index.mjs"
   },
   "author": "",
