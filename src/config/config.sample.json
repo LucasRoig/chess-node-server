@@ -1,0 +1,10 @@
+{
+  "development" : {
+    "port": 3000,
+    "database": ""
+  },
+  "test":{
+      "port": 3999,
+      "database": ""
+  }
+}
