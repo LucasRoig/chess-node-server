@@ -4,6 +4,7 @@ import chai from 'chai';
 import chaiHttp from 'chai-http';
 import {User} from '../../../src/models';
 import {dbPromise} from "../../../src/database";
+import UserHelper from "../UserHelper";
 
 chai.use(chaiHttp);
 
@@ -12,8 +13,8 @@ const should = chai.should();
 const expect = chai.expect;
 
 describe('Signup route tests', function () {
+
     beforeEach(async function () {
-        console.log("environment : " + process.env.NODE_ENV)
         await dbPromise;
         await mongoose.connection.db.dropDatabase();
     });
@@ -22,17 +23,8 @@ describe('Signup route tests', function () {
         return chai.request(server).post("/api/v1/signup").send(data)
     }
 
-    function validUserData(){
-        return {
-            username: 'test',
-            password: 'test',
-            email:"test@test.com"
-        }
-    }
-
     it('should create an user', function (done) {
-        this.timeout(10000)
-        signup(validUserData())
+        signup(UserHelper.validUserData())
             .end(async function (err, res) {
                 res.statusCode.should.equal(200);
                 let user = await User.findById(res.body._id);
@@ -42,7 +34,7 @@ describe('Signup route tests', function () {
     });
 
     it("should send an error if the email or username is already taken", function (done) {
-        let user = validUserData();
+        let user = UserHelper.validUserData();
         signup(user)
             .end(function (err, res) {
                 res.statusCode.should.equal(200);
@@ -57,7 +49,7 @@ describe('Signup route tests', function () {
     });
 
     it("should send an error if the email is empty", function (done) {
-       let user = validUserData();
+       let user = UserHelper.validUserData();
        user.email = "";
        signup(user).end(function (err,res) {
            res.statusCode.should.equal(400);
@@ -67,7 +59,7 @@ describe('Signup route tests', function () {
     });
 
     it("should send an error if the email is not valid", function (done) {
-        let user = validUserData();
+        let user = UserHelper.validUserData();
         user.email = "test";
         signup(user).end(function (err,res) {
             res.statusCode.should.equal(400);
@@ -89,7 +81,7 @@ describe('Signup route tests', function () {
     });
 
     it("should send an error if the username is empty", function (done) {
-        let user = validUserData();
+        let user = UserHelper.validUserData();
         user.username = "";
         signup(user).end(function (err,res) {
             res.statusCode.should.equal(400);
@@ -111,7 +103,7 @@ describe('Signup route tests', function () {
     });
 
     it("should send an error if the password is empty", function (done) {
-        let user = validUserData();
+        let user = UserHelper.validUserData();
         user.password = "";
         signup(user).end(function (err,res) {
             res.statusCode.should.equal(400);
@@ -144,7 +136,7 @@ describe('Signup route tests', function () {
     });
 
     it('should hash password', function (done) {
-        let user = validUserData();
+        let user = UserHelper.validUserData();
         signup(user).end(async function (err, res) {
             let dbUser = await User.findById(res.body._id);
             dbUser.should.not.be.null;
@@ -155,7 +147,7 @@ describe('Signup route tests', function () {
     });
 
     it('should not send password', function (done) {
-        signup(validUserData()).end(function (err, res) {
+        signup(UserHelper.validUserData()).end(function (err, res) {
             res.status.should.equal(200);
             expect(res.body.password).to.be.undefined;
             done();
