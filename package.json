@@ -5,8 +5,10 @@
   "main": "index.mjs",
   "type": "module",
   "scripts": {
-    "test": "cross-env NODE_ENV=test mocha --recursive -r esm --exit",
-    "start": "cross-env NODE_ENV=development node --experimental-modules index.mjs"
+    "test": "npm run unit-test && npm run int-test",
+    "start": "cross-env NODE_ENV=development node --experimental-modules index.mjs",
+    "unit-test" : "cross-env NODE_ENV=test mocha test/unit --recursive -r esm --exit",
+    "int-test" : "cross-env NODE_ENV=test mocha test/integration --recursive -r esm --exit"
   },
   "author": "",
   "license": "ISC",
@@ -20,6 +22,7 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
     "chai-http": "^4.3.0",
     "cross-env": "^5.2.0",
     "esm": "^3.2.25",

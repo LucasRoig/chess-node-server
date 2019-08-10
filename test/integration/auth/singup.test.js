@@ -3,14 +3,18 @@ import mongoose from 'mongoose';
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import {User} from '../../../src/models';
+import {dbPromise} from "../../../src/database";
 
 chai.use(chaiHttp);
 
 
 const should = chai.should();
+const expect = chai.expect;
 
 describe('Signup route tests', function () {
-    afterEach(async function () {
+    beforeEach(async function () {
+        console.log("environment : " + process.env.NODE_ENV)
+        await dbPromise;
         await mongoose.connection.db.dropDatabase();
     });
 
@@ -27,6 +31,7 @@ describe('Signup route tests', function () {
     }
 
     it('should create an user', function (done) {
+        this.timeout(10000)
         signup(validUserData())
             .end(async function (err, res) {
                 res.statusCode.should.equal(200);
@@ -44,7 +49,7 @@ describe('Signup route tests', function () {
                 signup(user)
                     .end(function (err, res) {
                         res.statusCode.should.equal(400);
-                        res.body.email.should.equal("Un compte avec cet email existe déjà.");
+                        res.body.email.should.equal("Un utilisateur avec cet email existe déjà.");
                         res.body.username.should.equal("Un compte avec cet nom d'utilisateur existe déjà.");
                         done()
                     })
@@ -56,7 +61,7 @@ describe('Signup route tests', function () {
        user.email = "";
        signup(user).end(function (err,res) {
            res.statusCode.should.equal(400);
-           res.body.email.should.equal("L'email ne peux pas être vide.");
+           res.body.email.should.equal("L'adresse mail ne peux pas être vide.");
            done();
        })
     });
@@ -66,7 +71,7 @@ describe('Signup route tests', function () {
         user.email = "test";
         signup(user).end(function (err,res) {
             res.statusCode.should.equal(400);
-            res.body.email.should.equal("L'email n'est pas valide.");
+            res.body.email.should.equal("L'addresse mail doit être valide.");
             done();
         })
     });
@@ -78,7 +83,7 @@ describe('Signup route tests', function () {
         };
         signup(user).end(function (err, res) {
             res.statusCode.should.equal(400);
-            res.body.email.should.equal("L'email ne peux pas être vide.");
+            res.body.email.should.equal("L'adresse mail ne peux pas être vide.");
             done();
         })
     });
@@ -132,7 +137,7 @@ describe('Signup route tests', function () {
         signup(user).end(function (err, res) {
             res.statusCode.should.equal(400);
             res.body.password.should.equal("Le mot de passe ne peux pas être vide.");
-            res.body.email.should.equal("Le nom d'utilisateur ne peux pas être vide.");
+            res.body.email.should.equal("L'adresse mail ne peux pas être vide.");
             res.body.username.should.equal("Le nom d'utilisateur ne peux pas être vide.");
             done();
         })
@@ -152,7 +157,8 @@ describe('Signup route tests', function () {
     it('should not send password', function (done) {
         signup(validUserData()).end(function (err, res) {
             res.status.should.equal(200);
-            res.body.password.should.be.undefined;
+            expect(res.body.password).to.be.undefined;
+            done();
         })
     })
 });

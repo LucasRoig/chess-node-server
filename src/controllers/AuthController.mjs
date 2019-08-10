@@ -1,9 +1,18 @@
 import {CreateUserInteractor} from "../interactors/auth"
 
-let signup = async (req,res) =>{
-    const {username,password} = req.body;
-    let user = await CreateUserInteractor.createUser(username, password);
-    res.json(user);
+/**
+ *
+ * @param {Request} req
+ * @param {Response} res
+ */
+let signup = async (req, res) => {
+    const {username, password, email} = req.body;
+    try {
+        let user = await CreateUserInteractor.createUser(username, email, password);
+        res.json(user);
+    } catch (e) {
+        res.status(400).json(e);
+    }
 };
 
 export default {
